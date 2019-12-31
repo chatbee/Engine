@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chatbees.Engine.Configurations.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,5 +10,6 @@ namespace Chatbees.Engine.Configurations
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public List<ITask> Tasks { get; set; } = new List<ITask>();
     }
 }

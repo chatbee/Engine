@@ -10,8 +10,7 @@ namespace Chatbees.Engine.Configurations.Tasks
         /// Method for handling engine exceptions and logging.
         /// </summary>
         /// <param name="message">The error message</param>
-        /// <param name="context">The context where the error occured</param>
-        public TaskExecutionException(string message, Context context): base(message)
+        public TaskExecutionException(string message): base(message)
         {
 
         }

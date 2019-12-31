@@ -1,4 +1,5 @@
-﻿using Chatbees.Engine.Converters;
+﻿using Chatbees.Engine.Contexts;
+using Chatbees.Engine.Converters;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,31 +18,31 @@ namespace Chatbees.Engine.Configurations.Tasks
         Guid TaskId { get; set; }
         public string TaskType { get; set; }
         public string Description { get; set; }
-        public string TaskError { get; set; }
+        public Exception TaskException { get; set; }
         /// <summary>
         /// This is the 'linked-list' esque pointer to the next task
         /// </summary>
-        public Guid NextTaskId { get; set; }
+        public string NextTaskId { get; set; }
 
         private class JsonCreationConverter : JsonCreationConverter<ITask>
         {
             protected override ITask Create(Type objectType,
               Newtonsoft.Json.Linq.JObject jObject)
             {
-                string nodeType;
-                if (jObject.Value<string>("nodeType") != null)
+                string taskType;
+                if (jObject.Value<string>("taskType") != null)
                 {
-                    nodeType = jObject.Value<string>("nodeType");
+                    taskType = jObject.Value<string>("taskType");
                 }
-                else if (jObject.Value<string>("NodeType") != null)
+                else if (jObject.Value<string>("TaskType") != null)
                 {
-                    nodeType = jObject.Value<string>("NodeType");
+                    taskType = jObject.Value<string>("TaskType");
                 }
                 else
                 {
-                    throw new Newtonsoft.Json.JsonException("Error finding Node Type during serialization");
+                    throw new Newtonsoft.Json.JsonException("Error finding Task Type during serialization");
                 }
-                var type = Type.GetType(nodeType);
+                var type = Type.GetType(taskType);
                 return (ITask)Activator.CreateInstance(type);
             }
         }
