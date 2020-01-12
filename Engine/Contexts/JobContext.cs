@@ -18,11 +18,11 @@ namespace Chatbees.Engine.Contexts
         public Guid InstanceId { get; set; }
         public JobConfiguration Configuration { get; set; }
         public ITask CurrentTask { get; set; }
-        public List<ITask> Jobs { get; set; }
-        public JobContext(List<ITask> jobs, ConfigContext configContext, Guid instanceId, JobExecutionMode executionMode)
+        public List<ITask> Tasks { get; set; }
+        public JobContext(List<ITask> tasks, ConfigContext configContext, Guid instanceId, JobExecutionMode executionMode)
         {
             this.InstanceId = instanceId;
-            this.Jobs = jobs;
+            this.Tasks = tasks;
             this.ParentContext = configContext;
             this.ExecutionMode = executionMode;
         }
@@ -32,7 +32,7 @@ namespace Chatbees.Engine.Contexts
             if (this.CurrentTask is null)
             {
                 this.ParentContext.WriteInstanceLog($"Current task is null, indicating this is a new job, starting at the start node");
-                this.CurrentTask = Jobs.Where(t => t is IStartTask).FirstOrDefault() ?? throw new TaskExecutionException("Error: No start task found");
+                this.CurrentTask = Tasks.Where(t => t is IStartTask).FirstOrDefault() ?? throw new JobExecutionException("Error: No start task found");
             }
 
             while (this.CurrentTask != null)
@@ -117,7 +117,7 @@ namespace Chatbees.Engine.Contexts
                 ParentContext.WriteInstanceLog("Conversation Requires Next Node ID '" + nextTaskId + "'");
 
                 //next node is available and has been set
-                var nextTask = this.Jobs.Where(f => f.TaskId == Guid.Parse(nextTaskId)).FirstOrDefault();
+                var nextTask = this.Tasks.Where(f => f.TaskId == Guid.Parse(nextTaskId)).FirstOrDefault();
 
                 if (nextTask == null)
                 {
