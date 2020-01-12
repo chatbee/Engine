@@ -15,7 +15,7 @@ namespace Chatbees.Engine
         private MemoryCache Cache { get; set; }
         private MemoryCacheOptions CacheOptions { get; set; }
     
-        private List<Type> RegisteredTypes { get; set; }
+        public List<Type> RegisteredTypes { get; set; }
         public EngineService(MemoryCacheOptions cacheOptions)
         {
             this.CacheOptions = cacheOptions;
@@ -69,6 +69,8 @@ namespace Chatbees.Engine
                 throw new ArgumentException("Error: Some of the types passed in do not implement ITask");
             }
             this.RegisteredTypes.AddRange(types);
+
+            Types.RegisteredTypes.AddRange(types);
         }
 
     }
