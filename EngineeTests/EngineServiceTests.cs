@@ -44,6 +44,9 @@ namespace EngineTests
 
             jobConfig.Tasks.Add(DataCreationHelper.MakeStartTask());
 
+
+            service.RegisterTypes(typeof(StartTask));
+
             var instanceId = service.NewInstance(jobConfig, Chatbees.Engine.Configurations.Job.JobExecutionMode.Debug, entryOptions);
 
             service.ProcessInput("Hi!", instanceId);
