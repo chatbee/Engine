@@ -10,7 +10,7 @@ namespace Chatbees.Engine.Configurations.Job
         public string Message { get; set; }
         public JobOutputEventArgs(Guid jobConfigurationId, string message)
         {
-            this.JobConfigurationId = JobConfigurationId;
+            this.JobConfigurationId = jobConfigurationId;
             this.Message = message;
         }
     }

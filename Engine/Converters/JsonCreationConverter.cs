@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Chatbees.Engine.Converters
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public abstract class JsonCreationConverter<T> : JsonConverter
     {
         /// <summary>

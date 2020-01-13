@@ -25,6 +25,7 @@ namespace Chatbees.Engine.Configurations.Tasks
         /// </summary>
         public string NextTaskId { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         private class JsonCreationConverter : JsonCreationConverter<ITask>
         {
             protected override ITask Create(Type objectType,
@@ -38,6 +39,14 @@ namespace Chatbees.Engine.Configurations.Tasks
                 else if (jObject.Value<string>("TaskType") != null)
                 {
                     taskType = jObject.Value<string>("TaskType");
+                }
+                else if (jObject.Value<string>("$type") != null)
+                {
+                    taskType = jObject.Value<string>("$type").Split(',')[0];
+                }
+                else if (jObject.Value<string>("$Type") != null)
+                {
+                    taskType = jObject.Value<string>("$Type").Split(',')[0];
                 }
                 else
                 {

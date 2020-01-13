@@ -7,24 +7,18 @@ using System.Text;
 namespace EngineTests.Helpers.Tasks
 {
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    public class StartTask : IStartTask
+    public class ThrowsTask : ITask
     {
-        public StartTask()
-        {
-            this.TaskType = this.ToString();
-        }
         public string Name { get; set; }
         public Guid TaskId { get; set; } = Guid.NewGuid();
-        public string TaskType { get; set; }
-        public string Description { get; set; }
-        public Exception TaskException { get; set; }
-        public string NextTaskId { get; set; }
-        public bool HasRun { get; set; }
+        public string TaskType {get; set;}
+        public string Description {get; set;}
+        public Exception TaskException {get; set;}
+        public string NextTaskId {get; set;}
 
         public string ExecuteTask(JobContext context)
         {
-            this.HasRun = true;
-            return "Start task ran";
+            throw new NotImplementedException();
         }
     }
 }

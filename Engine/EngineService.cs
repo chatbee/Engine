@@ -14,17 +14,20 @@ namespace Chatbees.Engine
     {
         private MemoryCache Cache { get; set; }
         private MemoryCacheOptions CacheOptions { get; set; }
+        private bool HasRegistered { get; set; }
         public event EventHandler<JobOutputEventArgs> JobOutputEvent;
-        public List<Type> RegisteredTypes { get; set; }
         public EngineService(MemoryCacheOptions cacheOptions)
         {
             this.CacheOptions = cacheOptions;
             this.Cache = new MemoryCache(this.CacheOptions);
-            this.RegisteredTypes = new List<Type>();
         }
 
         public Guid NewInstance(JobConfiguration jobConfiguration, JobExecutionMode executionMode, MemoryCacheEntryOptions entryOptions)
         {
+            if (!this.HasRegistered)
+            {
+                throw new EngineException("Error: You must register types before invoking the engine");
+            }
             ConfigContext configContext;
 
             configContext = new ConfigContext(jobConfiguration, executionMode);
@@ -36,6 +39,10 @@ namespace Chatbees.Engine
 
         public void ProcessInput(string input, Guid instanceId)
         {
+            if (!this.HasRegistered)
+            {
+                throw new EngineException("Error: You must register types before invoking the engine");
+            }
             this.Cache.TryGetValue(instanceId, out ConfigContext cachedContext);
 
             JobContext jobContext;
@@ -70,14 +77,17 @@ namespace Chatbees.Engine
 
         public void RegisterTypes(params Type[] types)
         {
+            if (types.Length == 0)
+            {
+                throw new ArgumentException("You can't register 0 types");
+            }
             var itaskTypes = types.Where(t => t.GetInterface(nameof(ITask)) != null);
             if (itaskTypes.Count() != types.Length)
             {
                 throw new ArgumentException("Error: Some of the types passed in do not implement ITask");
             }
-            this.RegisteredTypes.AddRange(types);
-
             Types.RegisteredTypes.AddRange(types);
+            this.HasRegistered = true;
         }
 
     }
