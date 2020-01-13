@@ -31,15 +31,13 @@ namespace EngineTests
             var jobConfig = DataCreationHelper.MakeJobConfiguration();
             Assert.Throws<EngineException>(delegate
             {
-
-                var instanceId = service.NewInstance(jobConfig, Chatbees.Engine.Configurations.Job.JobExecutionMode.Debug, entryOptions);
+               service.NewInstance(jobConfig, Chatbees.Engine.Configurations.Job.JobExecutionMode.Debug, entryOptions);
             });
 
         }
         [Fact]
         public void EngineServiceThrowsWithZeroRegistered()
         {
-            var jobConfig = DataCreationHelper.MakeJobConfiguration();
             Assert.Throws<ArgumentException>(delegate
             {
 
@@ -50,7 +48,6 @@ namespace EngineTests
         [Fact]
         public void EngineServiceThrowsWithNonITaskRegistered()
         {
-            var jobConfig = DataCreationHelper.MakeJobConfiguration();
             Assert.Throws<ArgumentException>(delegate
             {
 

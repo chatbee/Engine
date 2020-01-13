@@ -37,7 +37,9 @@ namespace Chatbees.Engine.Converters
           object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
+            {
                 return null;
+            }
             // Load JObject from stream 
             JObject jObject = JObject.Load(reader);
 
