@@ -39,14 +39,6 @@ namespace Chatbees.Engine.Configurations.Tasks
                 {
                     taskType = jObject.Value<string>("TaskType");
                 }
-                else if (jObject.Value<string>("$Type") != null)
-                {
-                    taskType = jObject.Value<string>("$Type");
-                }
-                else if (jObject.Value<string>("$type") != null)
-                {
-                    taskType = jObject.Value<string>("$type");
-                }
                 else
                 {
                     throw new Newtonsoft.Json.JsonException("Error finding Task Type during serialization");
@@ -60,7 +52,7 @@ namespace Chatbees.Engine.Configurations.Tasks
                 }
                 else
                 {
-                    throw new EngineException($"Requested Type {customType} was not registered. Type should be registered before invoking automation.");
+                    throw new EngineException($"Error requested Type {customType} was not registered. Type should be registered before invoking automation.");
                 }
 
             }

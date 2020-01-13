@@ -19,8 +19,9 @@ namespace Chatbees.Engine.Contexts
         public JobConfiguration Configuration { get; set; }
         public ITask CurrentTask { get; set; }
         public List<ITask> Tasks { get; set; }
-        public JobContext(List<ITask> tasks, ConfigContext configContext, Guid instanceId, JobExecutionMode executionMode)
+        public JobContext(List<ITask> tasks, ConfigContext configContext, Guid instanceId, JobExecutionMode executionMode, JobConfiguration configuration)
         {
+            this.Configuration = configuration;
             this.InstanceId = instanceId;
             this.Tasks = tasks;
             this.ParentContext = configContext;
@@ -144,7 +145,7 @@ namespace Chatbees.Engine.Contexts
         
         private void OnOutput(string output)
         {
-            var args = new JobOutputEventArgs(output);
+            var args = new JobOutputEventArgs(this.Configuration.Id,output);
 
             this.OutputEvent?.Invoke(this, args);
         }

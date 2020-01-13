@@ -1,5 +1,6 @@
 ﻿using Chatbees.Engine;
 using Chatbees.Engine.Configurations.Job;
+using Chatbees.Engine.Contexts;
 using EngineTests.Helpers;
 using EngineTests.Helpers.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -46,12 +47,17 @@ namespace EngineTests
 
 
             service.RegisterTypes(typeof(StartTask));
+            
 
             var instanceId = service.NewInstance(jobConfig, Chatbees.Engine.Configurations.Job.JobExecutionMode.Debug, entryOptions);
 
-            service.ProcessInput("Hi!", instanceId);
+            service.JobOutputEvent += delegate (object sender, JobOutputEventArgs e)
+            {
+                Assert.IsType<JobContext>(sender);
+                Assert.Equal("Start task ran", e.Message);
+            };
 
-            Assert.True((jobConfig.Tasks[0] as StartTask).HasRun);
+            service.ProcessInput("Hi!", instanceId);
         }
     }
 }

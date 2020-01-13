@@ -23,7 +23,7 @@ namespace EngineTests.Helpers.Tasks
         public string ExecuteTask(JobContext context)
         {
             this.HasRun = true;
-            return "";
+            return "Start task ran";
         }
     }
 }

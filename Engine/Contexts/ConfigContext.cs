@@ -27,7 +27,7 @@ namespace Chatbees.Engine.Contexts
 
             var clonedJobs = JsonConvert.DeserializeObject<List<ITask>>(JsonConvert.SerializeObject(this.Config.Tasks, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
 
-            var job = new JobContext(clonedJobs, this, this.InstanceId, this.Mode);
+            var job = new JobContext(clonedJobs, this, this.InstanceId, this.Mode, this.Config);
             
 
 

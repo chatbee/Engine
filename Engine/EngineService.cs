@@ -14,7 +14,7 @@ namespace Chatbees.Engine
     {
         private MemoryCache Cache { get; set; }
         private MemoryCacheOptions CacheOptions { get; set; }
-    
+        public event EventHandler<JobOutputEventArgs> JobOutputEvent;
         public List<Type> RegisteredTypes { get; set; }
         public EngineService(MemoryCacheOptions cacheOptions)
         {
@@ -52,6 +52,7 @@ namespace Chatbees.Engine
             {
                 jobContext = cachedContext.CurrentJob;
             }
+            jobContext.OutputEvent += JobContext_OutputEvent;
 
             var jobState = jobContext.ProcessJob(input);
             if (jobState == JobState.Finished)
@@ -61,6 +62,12 @@ namespace Chatbees.Engine
 
             this.Cache.Set(instanceId, cachedContext);
         }
+
+        private void JobContext_OutputEvent(object sender, JobOutputEventArgs e)
+        {
+            this.JobOutputEvent?.Invoke(sender, e);
+        }
+
         public void RegisterTypes(params Type[] types)
         {
             var itaskTypes = types.Where(t => t.GetInterface(nameof(ITask)) != null);
