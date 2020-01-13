@@ -93,6 +93,13 @@ namespace Chatbees.Engine.Contexts
                     }
                 }
 
+                if (string.IsNullOrEmpty(this.CurrentTask.NextTaskId))
+                {
+                    return JobState.Finished;
+                }
+ 
+
+
             }
             return JobState.Finished;
         }
