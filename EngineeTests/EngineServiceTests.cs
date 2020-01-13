@@ -25,7 +25,6 @@ namespace EngineTests
             this.entryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(1));
             this.service = new EngineService(o);
         }
-        
         [Fact]
         public void EngineServiceThrowsWithoutRegistering()
         {
@@ -72,10 +71,10 @@ namespace EngineTests
         [Fact]
         public void EngineServiceThrowsThereIsNothingInTheCacheByThatID()
         {
+            service.RegisterTypes(typeof(StartTask));
             Assert.Throws<EngineException>(delegate
             {
                 service.ProcessInput("hi", Guid.Empty);
-               
             });
 
         }
