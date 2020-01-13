@@ -11,10 +11,10 @@ namespace Chatbees.Engine.Contexts
     public class ConfigContext
     {
         private string IntialInput { get; set; }
-        private Guid instanceId { get; set; } = Guid.NewGuid();
+        public JobContext CurrentJob { get; set; }
+        public Guid InstanceId { get; set; } = Guid.NewGuid();
         private List<string> InstanceLogs { get; set; } = new List<string>();
         private JobConfiguration Config { get; set; }
-        public List<JobContext> ActiveJobs { get; set; } = new List<JobContext>();
         private JobExecutionMode Mode { get; set; }
         public ConfigContext(JobConfiguration jobConfiguration, JobExecutionMode executionMode)
         {
@@ -27,8 +27,9 @@ namespace Chatbees.Engine.Contexts
 
             var clonedJobs = JsonConvert.DeserializeObject<List<ITask>>(JsonConvert.SerializeObject(this.Config.Tasks, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
 
-            var job = new JobContext(clonedJobs, this, this.instanceId, this.Mode);
-            this.ActiveJobs.Add(job);
+            var job = new JobContext(clonedJobs, this, this.InstanceId, this.Mode, this.Config);
+            
+
 
             return job;
 

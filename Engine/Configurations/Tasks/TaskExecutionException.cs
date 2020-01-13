@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Chatbees.Engine.Configurations.Tasks
 {
-   public class TaskExecutionException: Exception
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    public class TaskExecutionException: Exception
     {
         /// <summary>
         /// Method for handling engine exceptions and logging.

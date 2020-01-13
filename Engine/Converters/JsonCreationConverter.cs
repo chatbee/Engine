@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Chatbees.Engine.Converters
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public abstract class JsonCreationConverter<T> : JsonConverter
     {
         /// <summary>
@@ -36,7 +37,9 @@ namespace Chatbees.Engine.Converters
           object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
+            {
                 return null;
+            }
             // Load JObject from stream 
             JObject jObject = JObject.Load(reader);
 

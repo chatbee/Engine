@@ -3,6 +3,7 @@ using Chatbees.Engine.Converters;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Chatbees.Engine.Configurations.Tasks
@@ -24,6 +25,7 @@ namespace Chatbees.Engine.Configurations.Tasks
         /// </summary>
         public string NextTaskId { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         private class JsonCreationConverter : JsonCreationConverter<ITask>
         {
             protected override ITask Create(Type objectType,
@@ -38,12 +40,30 @@ namespace Chatbees.Engine.Configurations.Tasks
                 {
                     taskType = jObject.Value<string>("TaskType");
                 }
+                else if (jObject.Value<string>("$type") != null)
+                {
+                    taskType = jObject.Value<string>("$type").Split(',')[0];
+                }
+                else if (jObject.Value<string>("$Type") != null)
+                {
+                    taskType = jObject.Value<string>("$Type").Split(',')[0];
+                }
                 else
                 {
                     throw new Newtonsoft.Json.JsonException("Error finding Task Type during serialization");
                 }
-                var type = Type.GetType(taskType);
-                return (ITask)Activator.CreateInstance(type);
+
+                var customType = Engine.Types.RegisteredTypes.Where(f => f.FullName == taskType).FirstOrDefault();
+
+                if (customType != null)
+                {
+                    return (ITask)Activator.CreateInstance(customType);
+                }
+                else
+                {
+                    throw new EngineException($"Error requested Type {customType} was not registered. Type should be registered before invoking automation.");
+                }
+
             }
         }
 

@@ -6,9 +6,11 @@ namespace Chatbees.Engine.Configurations.Job
 {
     public class JobOutputEventArgs
     {
+        public Guid JobConfigurationId { get; set; }
         public string Message { get; set; }
-        public JobOutputEventArgs(string message)
+        public JobOutputEventArgs(Guid jobConfigurationId, string message)
         {
+            this.JobConfigurationId = jobConfigurationId;
             this.Message = message;
         }
     }

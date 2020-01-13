@@ -18,37 +18,44 @@ namespace Chatbees.Engine.Contexts
         public Guid InstanceId { get; set; }
         public JobConfiguration Configuration { get; set; }
         public ITask CurrentTask { get; set; }
-        public List<ITask> Jobs { get; set; }
-        public JobContext(List<ITask> jobs, ConfigContext configContext, Guid instanceId, JobExecutionMode executionMode)
+        public List<ITask> Tasks { get; set; }
+        public JobContext(List<ITask> tasks, ConfigContext configContext, Guid instanceId, JobExecutionMode executionMode, JobConfiguration configuration)
         {
+            this.Configuration = configuration;
             this.InstanceId = instanceId;
-            this.Jobs = jobs;
+            this.Tasks = tasks;
             this.ParentContext = configContext;
             this.ExecutionMode = executionMode;
         }
         public JobState ProcessJob(string input)
         {
-            this.ParentContext.WriteInstanceLog($"Processing job '${input}'");
+            this.ParentContext.WriteInstanceLog($"Processing job '{input}'");
             if (this.CurrentTask is null)
             {
+                var errorHandler = Tasks.Where(t => t is IErrorHandlingTask).FirstOrDefault();
+
+                if (errorHandler != null)
+                {
+                    this.ParentContext.WriteInstanceLog($"Assigning Error Handling Task '{errorHandler.TaskId}'");
+                        this.ErrorHandler = errorHandler as IErrorHandlingTask;
+                }
+
                 this.ParentContext.WriteInstanceLog($"Current task is null, indicating this is a new job, starting at the start node");
-                this.CurrentTask = Jobs.Where(t => t is IStartTask).FirstOrDefault() ?? throw new TaskExecutionException("Error: No start task found");
+                this.CurrentTask = Tasks.Where(t => t is IStartTask).FirstOrDefault() ?? throw new JobExecutionException("Error: No start task found");
             }
 
             while (this.CurrentTask != null)
             {
-                string result;
+                string result = null;
                 try
                 {
                     if (this.CurrentTask is IErrorHandlingTask)
                     {
-                        this.ParentContext.WriteInstanceLog($"Assigning Error Handling Task '${this.CurrentTask.TaskId}'");
-                        this.ErrorHandler = this.CurrentTask as IErrorHandlingTask;
-                        result = null;
+                        // Error handlers are noops
                     }
                     else
                     {
-                        this.ParentContext.WriteInstanceLog($"Executing task '${this.CurrentTask.TaskId}'");
+                        this.ParentContext.WriteInstanceLog($"Executing task '{this.CurrentTask.TaskId}'");
                         result = this.CurrentTask.ExecuteTask(this);
                     }
 
@@ -56,13 +63,13 @@ namespace Chatbees.Engine.Contexts
                 catch (Exception e)
                 {
                     result = null;
-                    this.ParentContext.WriteInstanceLog($"Task exception occured: ${JsonConvert.SerializeObject(this.CurrentTask)} \nException:${e.ToString()}");
+                    this.ParentContext.WriteInstanceLog($"Task exception occured: {JsonConvert.SerializeObject(this.CurrentTask)} \nException:${e.ToString()}");
 
                     this.CurrentTask.TaskException = e;
 
                     if (this.ExecutionMode == JobExecutionMode.Debug)
                     {
-                        OnOutput($"Sorry, I experienced an error during job execution: ${e.Message}");
+                        OnOutput($"Sorry, I experienced an error during job execution: {e.Message}");
                     }
 
                     if (this.ErrorHandler is null)
@@ -86,13 +93,13 @@ namespace Chatbees.Engine.Contexts
                     this.ParentContext.WriteInstanceLog("Sending result to event subscriber");
                     OnOutput(result);
 
-                    var state = this.DetermineJobState();
-                    if (state == JobState.Finished)
-                    {
-                        return state;
-                    }
                 }
 
+                var state = this.DetermineJobState();
+                if (state == JobState.Finished)
+                {
+                    return state;
+                }
             }
             return JobState.Finished;
         }
@@ -117,7 +124,7 @@ namespace Chatbees.Engine.Contexts
                 ParentContext.WriteInstanceLog("Conversation Requires Next Node ID '" + nextTaskId + "'");
 
                 //next node is available and has been set
-                var nextTask = this.Jobs.Where(f => f.TaskId == Guid.Parse(nextTaskId)).FirstOrDefault();
+                var nextTask = this.Tasks.Where(f => f.TaskId == Guid.Parse(nextTaskId)).FirstOrDefault();
 
                 if (nextTask == null)
                 {
@@ -137,7 +144,7 @@ namespace Chatbees.Engine.Contexts
         
         private void OnOutput(string output)
         {
-            var args = new JobOutputEventArgs(output);
+            var args = new JobOutputEventArgs(this.Configuration.Id,output);
 
             this.OutputEvent?.Invoke(this, args);
         }
