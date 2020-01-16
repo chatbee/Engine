@@ -24,6 +24,10 @@ stages:
         version: '3.1.x'
     - task: DotNetCoreCLI@2
       inputs:
+        command: 'build'
+        projects: '**/Engine.csproj'
+    - task: DotNetCoreCLI@2
+      inputs:
         command: 'pack'
         packagesToPack: '**/Engine.csproj'
         versioningScheme: 'byPrereleaseNumber'
@@ -34,7 +38,7 @@ stages:
     - task: Bash@3
       inputs:
         targetType: 'inline'
-        script: 'dotnet nuget push $(Build.ArtifactStagingDirectory)/*.nupkg -s "https://api.nuget.org/v3/index.json" -k $(nugetKey)'
+        script: 'cp $(Build.ArtifactStagingDirectory)/Engine.nupkg $(Build.ArtifactStagingDirectory)/ChatbeesEngine.nupkg'
         failOnStderr: true
     - task: Bash@3
       inputs:
