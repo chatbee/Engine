@@ -34,12 +34,6 @@ stages:
         majorVersion: '0'
         minorVersion: '1'
         patchVersion: '0'
-
-    - task: Bash@3
-      inputs:
-        targetType: 'inline'
-        script: 'cp $(Build.ArtifactStagingDirectory)/Engine.nupkg $(Build.ArtifactStagingDirectory)/ChatbeesEngine.nupkg'
-        failOnStderr: true
     - task: Bash@3
       inputs:
         targetType: 'inline'
