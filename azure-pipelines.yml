@@ -24,6 +24,11 @@ stages:
         version: '3.1.x'
     - task: DotNetCoreCLI@2
       inputs:
+        command: 'test'
+        projects: '**/EngineTests.csproj'
+        testRunTitle: 'Platform Unit tests'
+    - task: DotNetCoreCLI@2
+      inputs:
         command: 'build'
         projects: '**/Engine.csproj'
     - task: DotNetCoreCLI@2
@@ -35,6 +40,7 @@ stages:
         minorVersion: '1'
         patchVersion: '0'
     - task: Bash@3
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       inputs:
         targetType: 'inline'
         script: 'dotnet nuget push $(Build.ArtifactStagingDirectory)/*.nupkg -s "https://api.nuget.org/v3/index.json" -k $(nugetKey)'
