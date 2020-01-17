@@ -22,18 +22,6 @@ stages:
       inputs:
         packageType: 'sdk'
         version: '3.1.x'
-    - task: Bash@3
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-      inputs:
-        targetType: 'inline'
-        script: 'dotnet tool install -g dnt'
-        failOnStderr: true
-    - task: Bash@3
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-      inputs:
-        targetType: 'inline'
-        script: 'dnt bump-versions patch'
-        failOnStderr: true
     - task: DotNetCoreCLI@2
       inputs:
         command: 'test'
@@ -43,12 +31,11 @@ stages:
       inputs:
         command: 'build'
         projects: '**/Engine.csproj'
-        versioningScheme: off
     - task: DotNetCoreCLI@2
       inputs:
         command: 'pack'
         packagesToPack: '**/Engine.csproj'
-        versioningScheme: off
+        versioningScheme: 'byBuildNumber'
     - task: PublishBuildArtifacts@1
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       inputs:
