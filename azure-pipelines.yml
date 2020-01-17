@@ -22,6 +22,18 @@ stages:
       inputs:
         packageType: 'sdk'
         version: '3.1.x'
+    - task: Bash@3
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      inputs:
+        targetType: 'inline'
+        script: 'npm i -g dotnettools'
+        failOnStderr: true
+    - task: Bash@3
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      inputs:
+        targetType: 'inline'
+        script: 'dnt bump-versions patch'
+        failOnStderr: true
     - task: DotNetCoreCLI@2
       inputs:
         command: 'test'
@@ -31,19 +43,15 @@ stages:
       inputs:
         command: 'build'
         projects: '**/Engine.csproj'
+        versioningScheme: off
     - task: DotNetCoreCLI@2
       inputs:
         command: 'pack'
         packagesToPack: '**/Engine.csproj'
-        versioningScheme: 'byPrereleaseNumber'
-        majorVersion: '0'
-        minorVersion: '1'
-        patchVersion: '0'
-    - task: Bash@3
-      condition: and(and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['Build.Reason'], 'PullRequest'))
+        versioningScheme: off
+    - task: PublishBuildArtifacts@1
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       inputs:
-        targetType: 'inline'
-        script: 'dotnet nuget push $(Build.ArtifactStagingDirectory)/*.nupkg -s "https://api.nuget.org/v3/index.json" -k $(nugetKey)'
-        failOnStderr: true
-    
-
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'package'
+        publishLocation: 'Container'
