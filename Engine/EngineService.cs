@@ -10,7 +10,14 @@ using System.Text;
 
 namespace Chatbees.Engine
 {
-    public class EngineService
+    public interface IEngineService
+    {
+        public event EventHandler<JobOutputEventArgs> JobOutputEvent;
+        public Guid NewInstance(JobConfiguration jobConfiguration, JobExecutionMode executionMode, MemoryCacheEntryOptions entryOptions);
+        public void ProcessInput(string input, Guid instanceId);
+        public void RegisterTypes(params Type[] types);
+    }
+    public class EngineService: IEngineService
     {
         private MemoryCache Cache { get; set; }
         private MemoryCacheOptions CacheOptions { get; set; }
