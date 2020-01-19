@@ -55,8 +55,8 @@ stages:
         command: 'pack'
         packagesToPack: '**/Engine.csproj'
         versioningScheme: 'byPrereleaseNumber'
-        majorVersion: '1'
-        minorVersion: '0'
+        majorVersion: '0'
+        minorVersion: '2'
         patchVersion: '0'
     - task: PublishBuildArtifacts@1
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
